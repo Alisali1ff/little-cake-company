@@ -1,0 +1,7 @@
+{
+  "name": "Little Cake Company - Design Showcase",
+  "description": "A professional one-page landing page for a UK cake company, featuring a built-in AI Design Assistant that explains the site structure and Webflow implementation steps.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
