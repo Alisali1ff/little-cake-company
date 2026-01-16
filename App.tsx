@@ -1,11 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
 import AboutSection from './components/AboutSection';
 import Testimonials from './components/Testimonials';
-import DesignAssistant from './components/DesignAssistant';
 import { PHONE_NUMBER, EMAIL, LOCATION, SERVICES, LOGO_URL } from './constants';
 
 const App: React.FC = () => {
@@ -201,7 +199,6 @@ const App: React.FC = () => {
           &copy; {new Date().getFullYear()} Little Cake Company Birmingham. All Rights Reserved.
         </div>
       </footer>
-      <DesignAssistant />
       <style>{`
         .animate-in { animation: fadeIn 0.8s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
