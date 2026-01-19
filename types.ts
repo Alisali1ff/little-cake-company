@@ -6,6 +6,19 @@ export interface Service {
   image: string;
 }
 
+export interface Product {
+  id: string;
+  name: string;
+  price: string;
+  category: string;
+  image: string; // Featured image
+  images: string[]; // Gallery images
+  description: string;
+  ingredients?: string[];
+  tag?: string;
+  deliveryDetail?: string;
+}
+
 export interface Testimonial {
   id: string;
   name: string;

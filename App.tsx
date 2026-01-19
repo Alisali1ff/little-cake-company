@@ -1,208 +1,281 @@
+
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import ProductList from './components/ProductList';
+import ProductDetail from './components/ProductDetail';
 import Services from './components/Services';
 import AboutSection from './components/AboutSection';
 import Testimonials from './components/Testimonials';
-import { PHONE_NUMBER, EMAIL, LOCATION, SERVICES, LOGO_URL } from './constants';
+import MenuPage from './components/MenuPage';
+import { PHONE_NUMBER, EMAIL, LOCATION, SERVICES, PRODUCTS, LOGO_URL } from './constants';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState('home');
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [currentView, selectedServiceId]);
+  }, [currentView, selectedServiceId, selectedProductId]);
 
   const handleServiceSelect = (id: string) => {
     setSelectedServiceId(id);
+    setSelectedProductId(null);
     setCurrentView('service-detail');
   };
 
+  const handleProductSelect = (id: string) => {
+    setSelectedProductId(id);
+    setSelectedServiceId(null);
+    setCurrentView('product-detail');
+  };
+
+  const resetToHome = () => {
+    setCurrentView('home');
+    setSelectedServiceId(null);
+    setSelectedProductId(null);
+  };
+
   const renderContent = () => {
+    // Handling Menu Page
+    if (currentView === 'menu') {
+      return (
+        <MenuPage 
+          onSelectProduct={handleProductSelect} 
+          onBack={resetToHome} 
+        />
+      );
+    }
+
+    // Handling Service Detail View
     if (currentView === 'service-detail' && selectedServiceId) {
       const service = SERVICES.find(s => s.id === selectedServiceId);
       if (!service) return null;
 
       return (
-        <div className="animate-in fade-in duration-500 bg-soft-cream min-h-screen pb-24">
-          <div className="relative h-[50vh] w-full">
-            <img src={service.image} alt={service.title} className="w-full h-full object-cover brightness-[0.7]" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center">
-              <button 
-                onClick={() => setCurrentView('home')}
-                className="mb-8 flex items-center gap-2 text-white/80 hover:text-white transition-colors uppercase tracking-widest text-xs font-bold"
+        <div className="animate-pop bg-white min-h-screen pb-24 relative overflow-hidden pt-32">
+          {/* Decorative Detail Vectors */}
+          <svg className="absolute top-[20%] left-[-5%] w-64 h-64 text-warm-gold/5" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+          <svg className="absolute top-[40%] right-[-5%] w-96 h-96 text-pink-300/5 rotate-45" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" fill="currentColor"/></svg>
+
+          <div className="relative h-[70vh] w-full rounded-[6rem] overflow-hidden shadow-2xl mx-auto max-w-7xl">
+            <img src={service.image} alt={service.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-warm-brown via-transparent to-black/20 flex flex-col items-center justify-end pb-24 text-white px-4 text-center">
+              <span className="font-black uppercase tracking-[0.5em] text-sm mb-4 opacity-70">Signature Collection</span>
+              <h1 className="text-7xl md:text-[100px] font-black mb-4 drop-shadow-2xl leading-none">{service.title}</h1>
+              <p className="font-accent text-4xl text-warm-gold">Handcrafted Happiness from Birmingham</p>
+            </div>
+          </div>
+
+          <div className="max-w-6xl mx-auto px-4 -mt-24 relative z-10">
+            <div className="bg-white p-12 md:p-24 rounded-[4rem] shadow-[0_50px_100px_-20px_rgba(0,0,0,0.15)] border border-warm-gold/5 relative">
+               <button 
+                onClick={resetToHome}
+                className="mb-16 inline-flex items-center gap-4 text-warm-brown font-black uppercase tracking-widest text-sm hover:text-warm-gold transition-all group"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Back to Collections
+                <span className="w-10 h-10 rounded-full border-2 border-warm-brown flex items-center justify-center group-hover:border-warm-gold group-hover:-translate-x-2 transition-all">←</span>
+                Back to collections
               </button>
-              <h1 className="text-5xl md:text-7xl font-serif mb-4">{service.title}</h1>
-              <div className="w-24 h-1 bg-warm-gold mx-auto"></div>
-            </div>
-          </div>
-
-          <div className="max-w-4xl mx-auto px-4 py-16">
-            <div className="bg-white p-8 md:p-16 rounded-3xl shadow-xl border border-warm-gold/10 -mt-24 relative z-10">
-              <h2 className="text-3xl font-serif text-warm-brown mb-6 italic">Exquisite Artistry from Birmingham</h2>
-              <p className="text-xl text-warm-brown/80 leading-relaxed mb-8">
-                {service.description} Our {service.title.toLowerCase()} are designed to be the unforgettable centerpiece of your event. Each layer is baked with precision using the finest UK-sourced ingredients in our Birmingham studio.
-              </p>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <div className="p-6 bg-soft-cream rounded-xl">
-                  <h3 className="font-bold text-warm-gold mb-2 uppercase tracking-wide text-sm">Bespoke Design</h3>
-                  <p className="text-warm-brown/70">Fully customized to your color palette, theme, and dietary requirements.</p>
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+                <div className="lg:col-span-8">
+                  <h2 className="text-5xl md:text-6xl font-black text-warm-brown mb-10 leading-tight">Every slice tells a <br/><span className="italic text-warm-gold font-accent text-7xl">beautiful story</span>.</h2>
+                  <p className="text-2xl text-warm-brown/70 leading-relaxed mb-12">
+                    {service.description} We don't just bake; we design edible art. Using only locally sourced Birmingham ingredients, we ensure every bite is as unforgettable as the moment you're celebrating.
+                  </p>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="flex items-start gap-6 p-8 bg-soft-cream rounded-[2.5rem] border border-warm-gold/10 hover:border-warm-gold transition-colors group">
+                      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shrink-0 text-warm-gold shadow-lg group-hover:rotate-12 transition-transform">
+                        <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                      </div>
+                      <div>
+                        <h4 className="font-black text-xl mb-2">Bespoke Design</h4>
+                        <p className="text-warm-brown/60 text-lg">Fully customized to your dream vision & palette.</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-6 p-8 bg-soft-cream rounded-[2.5rem] border border-warm-gold/10 hover:border-warm-gold transition-colors group">
+                      <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shrink-0 text-blue-500 shadow-lg group-hover:rotate-12 transition-transform">
+                        <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+                      </div>
+                      <div>
+                        <h4 className="font-black text-xl mb-2">Local Sourcing</h4>
+                        <p className="text-warm-brown/60 text-lg">Premium Birmingham free-range eggs & organic flour.</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-6 bg-soft-cream rounded-xl">
-                  <h3 className="font-bold text-warm-gold mb-2 uppercase tracking-wide text-sm">Premium Ingredients</h3>
-                  <p className="text-warm-brown/70">Organic flour, free-range eggs, and luxury Belgian chocolate as standard.</p>
-                </div>
-              </div>
 
-              <div className="border-t border-warm-gold/20 pt-12 text-center">
-                <h3 className="text-2xl font-serif text-warm-brown mb-6">Ready to order your {service.title}?</h3>
-                <a 
-                  href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`} 
-                  className="inline-flex items-center gap-3 bg-warm-gold text-white px-10 py-5 rounded-full font-bold text-xl hover:scale-105 transition-transform shadow-lg"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                  </svg>
-                  Call to Order
-                </a>
-                <p className="mt-4 text-warm-brown/50 text-sm">Available Mon-Sat for consultations in Birmingham.</p>
+                <div className="lg:col-span-4">
+                  <div className="bg-warm-brown p-10 rounded-[3rem] text-white shadow-2xl h-fit sticky top-32 group">
+                    <div className="absolute -top-6 -right-6 w-20 h-20 bg-warm-gold rounded-full flex items-center justify-center animate-bounce shadow-xl">
+                       <svg className="w-10 h-10" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                    <h3 className="text-3xl font-black mb-8 leading-tight">Ready for <br/>your tasting?</h3>
+                    <p className="mb-10 text-white/60 text-lg">Spaces fill up fast. Connect with our studio today to secure your date.</p>
+                    <a 
+                      href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`} 
+                      className="w-full bg-warm-gold text-white py-6 rounded-2xl font-black text-xl flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-transform shadow-xl"
+                    >
+                      Call Now
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          
-          <div className="max-w-7xl mx-auto px-4 mt-12">
-            <h3 className="text-3xl font-serif text-warm-brown mb-8 text-center">Other Collections You Might Like</h3>
-            <Services onSelectService={handleServiceSelect} />
           </div>
         </div>
       );
     }
 
-    switch (currentView) {
-      case 'services':
-        return (
-          <div className="animate-in fade-in duration-500">
-            <div className="bg-warm-brown py-20 md:py-32 text-center relative overflow-hidden">
-               <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1535141192574-5d4897c12636?q=80&w=1200&auto=format&fit=crop')] bg-cover bg-center"></div>
-               <div className="relative z-10 px-4">
-                  <h1 className="text-5xl md:text-7xl font-serif text-white mb-6">Our Collections</h1>
-                  <p className="mt-4 text-white/80 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                    Discover our range of luxury bespoke cakes, from grand weddings to intimate celebrations handcrafted in Birmingham.
-                  </p>
-                  <div className="w-24 h-1 bg-warm-gold mx-auto mt-8"></div>
-               </div>
-            </div>
-            <Services onSelectService={handleServiceSelect} />
-          </div>
-        );
-      case 'about':
-        return <div className="animate-in fade-in duration-500"><AboutSection /></div>;
-      case 'reviews':
-        return (
-          <div className="animate-in fade-in duration-500">
-            <div className="bg-warm-brown py-20 text-center relative">
-              <h1 className="text-4xl md:text-6xl font-serif text-white">Client Kind Words</h1>
-              <p className="mt-4 text-white/70 max-w-xl mx-auto px-4 italic">Shared experiences from our Birmingham cake studio family.</p>
-              <div className="w-24 h-1 bg-warm-gold mx-auto mt-6"></div>
-            </div>
-            <Testimonials />
-          </div>
-        );
-      case 'home':
-      default:
-        return (
-          <div className="animate-in fade-in duration-700">
-            <Hero />
-            <div className="bg-white py-20 border-b border-warm-gold/5">
-              <div className="max-w-4xl mx-auto px-4 text-center">
-                <h2 className="text-3xl md:text-5xl font-serif text-warm-brown mb-6 italic">Handcrafted with Love in Birmingham</h2>
-                <p className="text-lg text-warm-brown/70 leading-relaxed mb-8">
-                  Welcome to Little Cake Company. We specialize in edible masterpieces that taste even better than they look.
-                </p>
-                <button onClick={() => setCurrentView('about')} className="text-warm-gold font-bold uppercase tracking-widest text-sm hover:underline">Read Our Full Story</button>
-              </div>
-            </div>
-            <Services onSelectService={handleServiceSelect} />
-            <Testimonials />
-          </div>
-        );
+    // Handling Product Detail View
+    if (currentView === 'product-detail' && selectedProductId) {
+      const product = PRODUCTS.find(p => p.id === selectedProductId);
+      if (product) {
+        return <ProductDetail product={product} onBack={resetToHome} />;
+      }
     }
+
+    // Default Home View
+    return (
+      <div className="animate-pop relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-20 -z-0">
+           <svg className="absolute top-[1200px] left-[-10%] w-[40%] h-auto text-warm-gold/10" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+           <svg className="absolute top-[2500px] right-[-10%] w-[40%] h-auto text-pink-300/10" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+        </div>
+
+        <Hero onMenuClick={() => setCurrentView('menu')} />
+        
+        <ProductList onSelectProduct={handleProductSelect} />
+        
+        <section id="flavors" className="py-32 bg-white relative">
+          <svg className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-32 text-warm-gold/5" viewBox="0 0 100 100">
+             <path d="M50 0 L50 100 M0 50 L100 50" stroke="currentColor" strokeWidth="0.5" />
+          </svg>
+
+          <div className="max-w-7xl mx-auto px-4 text-center mb-20 relative z-10">
+            <div className="flex items-center justify-center gap-4 mb-4">
+              <div className="w-12 h-[2px] bg-warm-gold/20"></div>
+              <span className="text-warm-gold font-black uppercase tracking-[0.5em] text-sm">The Palette</span>
+              <div className="w-12 h-[2px] bg-warm-gold/20"></div>
+            </div>
+            <h2 className="text-6xl md:text-8xl font-black text-warm-brown mb-6">Signature Flavors</h2>
+            <p className="font-accent text-4xl text-warm-gold italic">What's your sweet soulmate?</p>
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 relative z-10">
+            {[
+              { label: 'Vanilla Bean', color: 'bg-[#FFFBF2]', icon: '🍦', desc: 'Madagascar Grade A' },
+              { label: 'Double Choc', color: 'bg-[#F9F4F0]', icon: '🍫', desc: '70% Belgian Dark' },
+              { label: 'Red Velvet', color: 'bg-[#FFF1F1]', icon: '🌹', desc: 'Classic Cream Cheese' },
+              { label: 'Lemon Zest', color: 'bg-[#F9FFF2]', icon: '🍋', desc: 'Organic Amalfi' },
+              { label: 'Lotus Biscoff', color: 'bg-[#FFF6F0]', icon: '🍪', desc: 'The Secret Blend' },
+              { label: 'Fresh Berry', color: 'bg-[#FFF0F6]', icon: '🍓', desc: 'Seasonal Pick' },
+            ].map((flavor, i) => (
+              <div key={i} className={`p-10 ${flavor.color} rounded-[3rem] text-center border-4 border-transparent hover:border-warm-gold/10 hover:-translate-y-4 transition-all cursor-pointer group shadow-sm hover:shadow-2xl`}>
+                <div className="text-6xl mb-6 transform group-hover:scale-125 group-hover:rotate-12 transition-transform duration-500">{flavor.icon}</div>
+                <h5 className="font-black text-warm-brown text-xl mb-2">{flavor.label}</h5>
+                <p className="text-xs uppercase tracking-widest font-bold opacity-40">{flavor.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div className="relative">
+          <svg className="w-full h-24 text-[#FAF9F6] fill-current" viewBox="0 0 1440 120" preserveAspectRatio="none">
+             <path d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z"></path>
+          </svg>
+          <Services onSelectService={handleServiceSelect} />
+        </div>
+        
+        <section className="py-32 bg-[#FAF9F6] relative overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 relative z-10">
+             <div className="flex flex-col lg:flex-row items-center gap-24">
+               <div className="lg:w-1/2 space-y-10">
+                 <div className="space-y-4">
+                   <span className="text-warm-gold font-black uppercase tracking-[0.4em] text-sm">Our Process</span>
+                   <h2 className="text-6xl md:text-8xl font-black text-warm-brown leading-tight">Your Journey to <br/><span className="text-warm-gold font-accent text-8xl italic">Sweet Bliss</span></h2>
+                 </div>
+                 <div className="space-y-12 mt-16">
+                    <div className="flex gap-10 group">
+                      <div className="w-20 h-20 bg-warm-gold text-white font-black text-4xl flex items-center justify-center rounded-[2rem] shrink-0 shadow-[0_20px_40px_-10px_rgba(232,93,4,0.4)] group-hover:rotate-12 transition-transform">1</div>
+                      <div className="pt-2">
+                        <h4 className="text-3xl font-black text-warm-brown mb-2">The Hello</h4>
+                        <p className="text-xl text-warm-brown/50">Give us a call or text. We'll chat about your theme, guests, and flavor dreams.</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-10 group">
+                      <div className="w-20 h-20 bg-white text-warm-gold border-4 border-warm-gold/20 font-black text-4xl flex items-center justify-center rounded-[2rem] shrink-0 group-hover:rotate-[-12deg] transition-transform">2</div>
+                      <div className="pt-2">
+                        <h4 className="text-3xl font-black text-warm-brown mb-2">The Sketch</h4>
+                        <p className="text-xl text-warm-brown/50">Our Birmingham team designs your bespoke masterpiece and sends a custom quote.</p>
+                      </div>
+                    </div>
+                 </div>
+               </div>
+               
+               <div className="lg:w-1/2 relative">
+                 <div className="rounded-[5rem] overflow-hidden shadow-[0_50px_100px_-20px_rgba(0,0,0,0.3)] rotate-3 border-[12px] border-white">
+                   <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1000&auto=format&fit=crop" className="w-full" alt="baking studio" />
+                 </div>
+               </div>
+             </div>
+          </div>
+        </section>
+
+        <Testimonials />
+      </div>
+    );
   };
 
   return (
-    <div className="min-h-screen flex flex-col selection:bg-warm-gold selection:text-white">
-      <Header currentView={currentView} onNavigate={(view) => { setCurrentView(view); setSelectedServiceId(null); }} />
+    <div className="min-h-screen flex flex-col selection:bg-warm-gold selection:text-white bg-soft-cream">
+      <Header 
+        currentView={currentView} 
+        onNavigate={(view) => { setCurrentView(view); setSelectedServiceId(null); setSelectedProductId(null); }} 
+        onSelectService={handleServiceSelect}
+      />
       <main className="flex-grow">
-        {renderContent()}
-        <section className="py-24 bg-soft-cream text-warm-brown border-t border-warm-gold/10 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-5 pointer-events-none">
-             <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=1920&auto=format&fit=crop" className="w-full h-full object-cover" alt="" />
-          </div>
-          <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-            <h2 className="text-4xl md:text-6xl mb-8 leading-tight text-warm-brown">Your dream cake starts with a <span className="italic text-warm-gold">conversation</span>.</h2>
-            <p className="text-xl text-warm-brown/70 mb-12">Our calendar fills up months in advance. Call our Birmingham studio today to book your bespoke consultation.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-              <a href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`} className="w-full sm:w-auto bg-warm-gold hover:bg-red-700 text-white px-10 py-5 rounded-full font-bold text-2xl transition-all shadow-xl flex items-center justify-center gap-3 transform hover:scale-105">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                Call Our Studio
-              </a>
-              <div className="text-warm-brown/60 text-sm italic text-center sm:text-left">Birmingham Studio Hours: <br /> Mon-Sat: 9am - 6pm</div>
-            </div>
-          </div>
-        </section>
+        {currentView === 'about' ? <AboutSection /> : 
+         currentView === 'reviews' ? <Testimonials /> : 
+         renderContent()}
       </main>
-      <footer className="bg-black text-white/50 py-24 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-16">
+      
+      <footer className="bg-warm-brown text-white py-16 rounded-t-[4rem] relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-12 relative z-10">
           <div className="md:col-span-2">
-            <div className="flex flex-col items-start gap-8 mb-10">
-              <div className="w-64 h-64 flex items-center justify-start overflow-hidden">
-                <img 
-                  src={LOGO_URL} 
-                  alt="Little Cake Company Logo" 
-                  className="w-full h-full object-contain transform scale-125" 
-                />
+            <div className="flex items-center gap-6 mb-8 group cursor-pointer" onClick={resetToHome}>
+              <div className="w-24 h-24 bg-white rounded-[2rem] p-2 rotate-[-5deg] group-hover:rotate-0 transition-transform shadow-xl overflow-hidden">
+                <img src={`${LOGO_URL}=s1000`} alt="Logo" className="w-full h-full object-contain" />
+              </div>
+              <div>
+                <h4 className="text-2xl font-serif font-black tracking-tighter">LITTLE CAKE <span className="text-warm-gold font-accent text-3xl italic">Co.</span></h4>
+                <p className="text-white/40 uppercase tracking-[0.4em] text-[10px] font-black">Birmingham's Sweetest Secret</p>
               </div>
             </div>
-            <p className="max-w-sm mb-10 leading-relaxed text-xl">Bespoke luxury cakes for all occasions. Based in Birmingham, serving the West Midlands with exceptional craftsmanship.</p>
-            <div className="flex space-x-10">
-              <a href="#" className="hover:text-warm-gold transition-colors text-white font-bold">Instagram</a>
-              <a href="#" className="hover:text-warm-gold transition-colors text-white font-bold">Facebook</a>
-              <a href="#" className="hover:text-warm-gold transition-colors text-white font-bold">Pinterest</a>
-            </div>
+            <p className="text-base text-white/60 max-w-md mb-8 leading-relaxed">Making the world a little sweeter, one handcrafted slice at a time.</p>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-8 text-2xl">Studio Info</h4>
-            <ul className="space-y-6 text-lg">
-              <li className="font-black text-white text-2xl tracking-tight">{PHONE_NUMBER}</li>
-              <li className="hover:text-white transition-colors cursor-pointer">{EMAIL}</li>
-              <li className="leading-tight">{LOCATION}</li>
+            <h5 className="text-white font-black uppercase tracking-[0.2em] text-[10px] mb-6 opacity-40">Contact Studio</h5>
+            <ul className="space-y-3 text-base text-white/80">
+              <li className="text-white font-black text-lg"><a href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`}>{PHONE_NUMBER}</a></li>
+              <li className="text-sm font-medium">{EMAIL}</li>
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-8 text-2xl">Quick Links</h4>
-            <ul className="space-y-6 text-lg">
-              <li><button onClick={() => setCurrentView('services')} className="hover:text-white transition-colors">All Collections</button></li>
-              <li><button onClick={() => setCurrentView('about')} className="hover:text-white transition-colors">Our Story</button></li>
-              <li><button onClick={() => setCurrentView('reviews')} className="hover:text-white transition-colors">Reviews</button></li>
-              <li><a href={`tel:${PHONE_NUMBER.replace(/\s/g, '')}`} className="hover:text-white transition-colors">Contact Us</a></li>
+            <h5 className="text-white font-black uppercase tracking-[0.2em] text-[10px] mb-6 opacity-40">Explore More</h5>
+            <ul className="space-y-3 text-sm text-white/80 font-bold">
+              <li><button onClick={resetToHome}>Home Page</button></li>
+              <li><button onClick={() => setCurrentView('about')}>Our Story</button></li>
+              <li><button onClick={() => setCurrentView('reviews')}>Love Letters</button></li>
             </ul>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 mt-24 pt-10 border-t border-white/5 text-center text-xs uppercase tracking-[0.3em] font-medium text-white/30">
-          &copy; {new Date().getFullYear()} Little Cake Company Birmingham. All Rights Reserved.
+        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-white/5 text-[10px] text-white/20 uppercase tracking-[0.4em] font-black text-center">
+          &copy; {new Date().getFullYear()} Little Cake Company Birmingham
         </div>
       </footer>
-      <style>{`
-        .animate-in { animation: fadeIn 0.8s ease-out forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-      `}</style>
     </div>
   );
 };
